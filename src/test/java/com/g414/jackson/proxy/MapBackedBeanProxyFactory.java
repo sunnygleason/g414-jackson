@@ -15,37 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.example;
+package com.g414.jackson.proxy;
 
-import com.g414.jackson.proxy.MaskProxyFactory;
+import java.lang.reflect.Proxy;
 
 /**
- * Simple implementation class that may be serialized as any of 2 interfaces (or
- * itself).
+ * Factory class for generating new Proxy classes using the MaskProxy.
  */
-public class ExampleImpl implements Example3 {
-	public Integer getA() {
-		return Integer.valueOf(0x1234);
-	}
-
-	public String getB() {
-		return "Foo";
-	}
-
-	public Long getC() {
-		return Long.valueOf(0x12345678L);
-	}
-
-	@Override
-	public int getD() {
-		return 0xCAFEBABE;
-	}
-
-	public Example1 asExample1() {
-		return MaskProxyFactory.newProxyInstance(Example1.class, this);
-	}
-
-	public Example2 asExample2() {
-		return MaskProxyFactory.newProxyInstance(Example2.class, this);
+public class MapBackedBeanProxyFactory {
+	public static <T> T newProxyInstance(Class<T> iface) {
+		return (T) Proxy.newProxyInstance(iface.getClassLoader(),
+				new Class[] { iface }, new MapBackedBeanProxy(iface));
 	}
 }
