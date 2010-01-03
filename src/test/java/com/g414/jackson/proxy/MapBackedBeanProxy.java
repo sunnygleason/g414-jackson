@@ -51,11 +51,13 @@ public class MapBackedBeanProxy<T> implements InvocationHandler {
 
 	public Object invoke(Object proxy, Method method, Object[] args)
 			throws Throwable {
-		if (method.getName().equals("toString") && args == null) {
+		String methodName = method.getName();
+
+		if (methodName.equals("toString") && args == null) {
 			return iface.getName() + "$" + delegate.toString();
 		}
 
-		if (method.getName().equals("equals") && args.length == 1) {
+		if (methodName.equals("equals") && args.length == 1) {
 			if (!Proxy.isProxyClass(args[1].getClass())) {
 				return false;
 			}
@@ -71,27 +73,22 @@ public class MapBackedBeanProxy<T> implements InvocationHandler {
 					.equals(((MapBackedBeanProxy) invocationHandler).delegate);
 		}
 
-		if (method.getName().equals("hashCode") && args == null) {
+		if (methodName.equals("hashCode") && args == null) {
 			return delegate.hashCode();
 		}
 
-		if (iface.getMethod(method.getName(), method.getParameterTypes()) == null) {
+		if (iface.getMethod(methodName, method.getParameterTypes()) == null
+				|| methodName.length() < 4) {
 			return finalHandler.invoke(proxy, method, args);
 		}
 
-		char[] methodChars = method.getName().toCharArray();
+		String property = getPropertyName(methodName);
 
-		if (methodChars.length > 3 && method.getName().startsWith("get")
-				&& args.length == 0) {
-			methodChars[3] = Character.toLowerCase(methodChars[3]);
-			String property = new String(methodChars, 3, methodChars.length - 3);
+		if (methodName.startsWith("get") && args.length == 0) {
 			return delegate.get(property);
 		}
 
-		if (methodChars.length > 3 && method.getName().startsWith("set")
-				&& args.length == 1) {
-			methodChars[3] = Character.toLowerCase(methodChars[3]);
-			String property = new String(methodChars, 3, methodChars.length - 3);
+		if (methodName.startsWith("set") && args.length == 1) {
 			delegate.put(property, args[0]);
 			return null;
 		}
@@ -101,5 +98,16 @@ public class MapBackedBeanProxy<T> implements InvocationHandler {
 
 	public void set(String property, Object value) {
 		this.delegate.put(property, value);
+	}
+
+	public Object get(String property) {
+		return this.delegate.get(property);
+	}
+
+	private String getPropertyName(String methodName) {
+		char[] methodChars = methodName.toCharArray();
+		methodChars[3] = Character.toLowerCase(methodChars[3]);
+		String property = new String(methodChars, 3, methodChars.length - 3);
+		return property;
 	}
 }
