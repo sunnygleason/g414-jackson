@@ -20,9 +20,6 @@ package org.codehaus.jackson.map.deser;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonProcessingException;
@@ -44,15 +41,6 @@ import com.g414.jackson.proxy.MapBackedBeanProxyFactory;
  * factory to allow deserialization using interfaces.
  */
 public class ProxyDeserializerFactory extends BeanDeserializerFactory {
-	protected static final Set<Class> javaClasses;
-	static {
-		Set<Class> newJavaClasses = new HashSet<Class>();
-		newJavaClasses.add(String.class);
-		newJavaClasses.add(Long.class);
-		newJavaClasses.add(Integer.class);
-		javaClasses = Collections.unmodifiableSet(newJavaClasses);
-	}
-
 	public ProxyDeserializerFactory() {
 		super();
 	}
@@ -68,10 +56,6 @@ public class ProxyDeserializerFactory extends BeanDeserializerFactory {
 		return super.createBeanDeserializer(config, type, p);
 	}
 
-	protected boolean isJavaType(JavaType type) {
-		return javaClasses.contains(type.getRawClass());
-	}
-
 	protected static String normalizeName(String methodName) {
 		char[] name = methodName.substring(3).toCharArray();
 		name[0] = Character.toLowerCase(name[0]);
@@ -80,21 +64,18 @@ public class ProxyDeserializerFactory extends BeanDeserializerFactory {
 	}
 
 	protected static class BeanDeserializerProxyImpl extends BeanDeserializer {
-		public BeanDeserializerProxyImpl(final JavaType type) {
+		public BeanDeserializerProxyImpl(JavaType type) {
 			super(type);
 
 			for (Method method : type.getRawClass().getMethods()) {
-				if (method.getName().length() > 3
-						&& !method.getName().equals("getClass")
-						&& method.getName().startsWith("get")
-						&& method.getReturnType() != null) {
-					final String propName = normalizeName(method.getName());
-					final Class propClass = method.getReturnType();
-
-					final JavaType propType = TypeFactory.fromClass(propClass);
-
-					this.addProperty(new PlaceHolderSettableBeanProperty(
-							propName, propType));
+				String methodName = method.getName();
+				if (methodName.length() > 3 && methodName.startsWith("get")) {
+					String propName = normalizeName(methodName);
+					JavaType propertyType = TypeFactory.fromClass(method
+							.getReturnType());
+					SettableBeanProperty property = new SettableBeanProperty.SetterlessProperty(
+							propName, propertyType, null);
+					this.addProperty(property);
 				}
 			}
 		}
@@ -115,12 +96,12 @@ public class ProxyDeserializerFactory extends BeanDeserializerFactory {
 				return null; // never gets here
 			}
 
-			while (jp.nextToken() != JsonToken.END_OBJECT) { // otherwise field
-				// name
+			while (jp.nextToken() != JsonToken.END_OBJECT) {
+				// otherwise field name
 				String propName = jp.getCurrentName();
 				SettableBeanProperty prop = this._props.get(propName);
 
-				if (prop != null) { // normal case
+				if (prop != null) {
 					Object value = prop.deserialize(jp, ctxt);
 					beanImpl.set(propName, value);
 					continue;
@@ -128,28 +109,6 @@ public class ProxyDeserializerFactory extends BeanDeserializerFactory {
 			}
 
 			return bean;
-		}
-	}
-
-	protected static class PlaceHolderSettableBeanProperty extends
-			SettableBeanProperty {
-		public PlaceHolderSettableBeanProperty(String propName, JavaType type) {
-			super(propName, type);
-		}
-
-		@Override
-		public void deserializeAndSet(JsonParser arg0,
-				DeserializationContext arg1, Object arg2) throws IOException,
-				JsonProcessingException {
-		}
-
-		@Override
-		public void set(Object arg0, Object arg1) throws IOException {
-		}
-
-		@Override
-		protected Class<?> getDeclaringClass() {
-			return this.getType().getRawClass();
 		}
 	}
 }

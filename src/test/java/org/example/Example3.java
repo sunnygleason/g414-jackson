@@ -20,4 +20,6 @@ package org.example;
 /** Coumpound interface */
 public interface Example3 extends Example1, Example2 {
 	int getD();
+
+	Example1 getNested();
 }

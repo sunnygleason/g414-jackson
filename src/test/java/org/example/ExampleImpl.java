@@ -41,6 +41,21 @@ public class ExampleImpl implements Example3 {
 		return 0xCAFEBABE;
 	}
 
+	@Override
+	public Example1 getNested() {
+		return new Example1() {
+			@Override
+			public String getB() {
+				return "nested";
+			}
+
+			@Override
+			public Integer getA() {
+				return -1;
+			}
+		};
+	}
+
 	public Example1 asExample1() {
 		return MaskProxyFactory.newProxyInstance(Example1.class, this);
 	}
