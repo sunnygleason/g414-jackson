@@ -24,4 +24,6 @@ public interface Example1 {
 	Integer getA();
 
 	String getB();
+	
+	void doIt(Object param1);
 }

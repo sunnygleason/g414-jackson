@@ -37,6 +37,10 @@ public class ExampleImpl implements Example3 {
 	}
 
 	@Override
+	public void doIt(Object param1) {
+	}
+
+	@Override
 	public int getD() {
 		return 0xCAFEBABE;
 	}
@@ -53,8 +57,16 @@ public class ExampleImpl implements Example3 {
 			public Integer getA() {
 				return -1;
 			}
+
+			@Override
+			public void doIt(Object param1) {
+			}
 		};
 	}
+
+//	public int getValue() {
+//		throw new UnsupportedOperationException();
+//	}
 
 	public Example1 asExample1() {
 		return MaskProxyFactory.newProxyInstance(Example1.class, this);
