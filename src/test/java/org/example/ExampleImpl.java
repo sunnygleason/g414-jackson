@@ -24,55 +24,55 @@ import com.g414.jackson.proxy.MaskProxyFactory;
  * itself).
  */
 public class ExampleImpl implements Example3 {
-	public Integer getA() {
-		return Integer.valueOf(0x1234);
-	}
+    public Integer getA() {
+        return Integer.valueOf(0x1234);
+    }
 
-	public String getB() {
-		return "Foo";
-	}
+    public String getB() {
+        return "Foo";
+    }
 
-	public Long getC() {
-		return Long.valueOf(0x12345678L);
-	}
+    public Long getC() {
+        return Long.valueOf(0x12345678L);
+    }
 
-	@Override
-	public void doIt(Object param1) {
-	}
+    @Override
+    public void doIt(Object param1) {
+    }
 
-	@Override
-	public int getD() {
-		return 0xCAFEBABE;
-	}
+    @Override
+    public int getD() {
+        return 0xCAFEBABE;
+    }
 
-	@Override
-	public Example1 getNested() {
-		return new Example1() {
-			@Override
-			public String getB() {
-				return "nested";
-			}
+    @Override
+    public Example1 getNested() {
+        return new Example1() {
+            @Override
+            public String getB() {
+                return "nested";
+            }
 
-			@Override
-			public Integer getA() {
-				return -1;
-			}
+            @Override
+            public Integer getA() {
+                return -1;
+            }
 
-			@Override
-			public void doIt(Object param1) {
-			}
-		};
-	}
+            @Override
+            public void doIt(Object param1) {
+            }
+        };
+    }
 
-//	public int getValue() {
-//		throw new UnsupportedOperationException();
-//	}
+    // public int getValue() {
+    // throw new UnsupportedOperationException();
+    // }
 
-	public Example1 asExample1() {
-		return MaskProxyFactory.newProxyInstance(Example1.class, this);
-	}
+    public Example1 asExample1() {
+        return MaskProxyFactory.newProxyInstance(Example1.class, this);
+    }
 
-	public Example2 asExample2() {
-		return MaskProxyFactory.newProxyInstance(Example2.class, this);
-	}
+    public Example2 asExample2() {
+        return MaskProxyFactory.newProxyInstance(Example2.class, this);
+    }
 }

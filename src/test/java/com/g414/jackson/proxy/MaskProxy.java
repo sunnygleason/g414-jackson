@@ -26,44 +26,44 @@ import java.lang.reflect.Method;
  * interface which "masks" the methods on the target class.
  */
 public class MaskProxy<T> implements InvocationHandler {
-	private final Class<T> iface;
-	private final Object delegate;
-	private final InvocationHandler finalHandler;
+    private final Class<T> iface;
+    private final Object delegate;
+    private final InvocationHandler finalHandler;
 
-	public static final InvocationHandler UNSUPPORTED_OPERATION_HANDLER = new InvocationHandler() {
-		public Object invoke(Object proxy, Method method, Object[] args)
-				throws Throwable {
-			throw new UnsupportedOperationException();
-		}
-	};
+    public static final InvocationHandler UNSUPPORTED_OPERATION_HANDLER = new InvocationHandler() {
+        public Object invoke(Object proxy, Method method, Object[] args)
+                throws Throwable {
+            throw new UnsupportedOperationException();
+        }
+    };
 
-	public Class<T> getInterface() {
-		return iface;
-	}
+    public Class<T> getInterface() {
+        return iface;
+    }
 
-	public MaskProxy(Class<T> iface, Object delegate) {
-		this.iface = iface;
-		this.delegate = delegate;
-		this.finalHandler = UNSUPPORTED_OPERATION_HANDLER;
-	}
+    public MaskProxy(Class<T> iface, Object delegate) {
+        this.iface = iface;
+        this.delegate = delegate;
+        this.finalHandler = UNSUPPORTED_OPERATION_HANDLER;
+    }
 
-	public Object invoke(Object proxy, Method method, Object[] args)
-			throws Throwable {
-		if (iface.getMethod(method.getName(), method.getParameterTypes()) == null) {
-			return finalHandler.invoke(proxy, method, args);
-		}
+    public Object invoke(Object proxy, Method method, Object[] args)
+            throws Throwable {
+        if (iface.getMethod(method.getName(), method.getParameterTypes()) == null) {
+            return finalHandler.invoke(proxy, method, args);
+        }
 
-		try {
-			return delegate.getClass().getMethod(method.getName(),
-					method.getParameterTypes()).invoke(delegate, args);
-		} catch (NoSuchMethodException nsme) {
-		} catch (IllegalArgumentException iae) {
-		} catch (IllegalAccessException iae2) {
-		} catch (InvocationTargetException ite) {
-			throw ite.getTargetException();
-		}
-		// allow SecurityException to go out unchecked
+        try {
+            return delegate.getClass().getMethod(method.getName(),
+                    method.getParameterTypes()).invoke(delegate, args);
+        } catch (NoSuchMethodException nsme) {
+        } catch (IllegalArgumentException iae) {
+        } catch (IllegalAccessException iae2) {
+        } catch (InvocationTargetException ite) {
+            throw ite.getTargetException();
+        }
+        // allow SecurityException to go out unchecked
 
-		return finalHandler.invoke(proxy, method, args);
-	}
+        return finalHandler.invoke(proxy, method, args);
+    }
 }

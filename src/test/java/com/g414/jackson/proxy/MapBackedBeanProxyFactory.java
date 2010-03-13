@@ -23,8 +23,8 @@ import java.lang.reflect.Proxy;
  * Factory class for generating new Proxy classes using the MaskProxy.
  */
 public class MapBackedBeanProxyFactory {
-	public static <T> T newProxyInstance(Class<T> iface) {
-		return (T) Proxy.newProxyInstance(iface.getClassLoader(),
-				new Class[] { iface }, new MapBackedBeanProxy(iface));
-	}
+    public static <T> T newProxyInstance(Class<T> iface) {
+        return (T) Proxy.newProxyInstance(iface.getClassLoader(),
+                new Class[] { iface }, new MapBackedBeanProxy(iface));
+    }
 }

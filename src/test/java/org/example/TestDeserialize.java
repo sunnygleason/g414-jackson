@@ -31,41 +31,41 @@ import com.g414.jackson.proxy.ProxySerializerFactory;
  * Exercise the deserializer...
  */
 public class TestDeserialize extends TestCase {
-	public void testExample() throws Exception {
-		ExampleImpl impl = new ExampleImpl();
+    public void testExample() throws Exception {
+        ExampleImpl impl = new ExampleImpl();
 
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.setSerializerFactory(new ProxySerializerFactory());
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializerFactory(new ProxySerializerFactory());
 
-		ProxyDeserializerFactory df = new ProxyDeserializerFactory();
-		StdDeserializerProvider dp = new StdDeserializerProvider(df);
-		mapper.setDeserializerProvider(dp);
+        ProxyDeserializerFactory df = new ProxyDeserializerFactory();
+        StdDeserializerProvider dp = new StdDeserializerProvider(df);
+        mapper.setDeserializerProvider(dp);
 
-		// Look, I'm an ExampleImpl...
-		StringWriter w1 = new StringWriter();
-		mapper.writeValue(w1, impl);
-		String w1Value = w1.toString();
-		System.out.println(w1Value);
-		System.out.println(mapper.readValue(w1Value, Example3.class));
+        // Look, I'm an ExampleImpl...
+        StringWriter w1 = new StringWriter();
+        mapper.writeValue(w1, impl);
+        String w1Value = w1.toString();
+        System.out.println(w1Value);
+        System.out.println(mapper.readValue(w1Value, Example3.class));
 
-		// Look, I'm an Example1...
-		StringWriter w2 = new StringWriter();
-		mapper.writeValue(w2, impl.asExample1());
-		String w2Value = w2.toString();
+        // Look, I'm an Example1...
+        StringWriter w2 = new StringWriter();
+        mapper.writeValue(w2, impl.asExample1());
+        String w2Value = w2.toString();
 
-		System.out.println(w1Value);
-		System.out.println(mapper.readValue(w1Value, Example1.class));
-		System.out.println(w2Value);
-		System.out.println(mapper.readValue(w2Value, Example1.class));
+        System.out.println(w1Value);
+        System.out.println(mapper.readValue(w1Value, Example1.class));
+        System.out.println(w2Value);
+        System.out.println(mapper.readValue(w2Value, Example1.class));
 
-		// Look, I'm an Example2...
-		StringWriter w3 = new StringWriter();
-		mapper.writeValue(w3, impl.asExample2());
-		String w3Value = w3.toString();
+        // Look, I'm an Example2...
+        StringWriter w3 = new StringWriter();
+        mapper.writeValue(w3, impl.asExample2());
+        String w3Value = w3.toString();
 
-		System.out.println(w1Value);
-		System.out.println(mapper.readValue(w1Value, Example2.class));
-		System.out.println(w3Value);
-		System.out.println(mapper.readValue(w3Value, Example2.class));
-	}
+        System.out.println(w1Value);
+        System.out.println(mapper.readValue(w1Value, Example2.class));
+        System.out.println(w3Value);
+        System.out.println(mapper.readValue(w3Value, Example2.class));
+    }
 }

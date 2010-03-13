@@ -21,9 +21,9 @@ package org.example;
  * Basic interface with 2 methods.
  */
 public interface Example1 {
-	Integer getA();
+    Integer getA();
 
-	String getB();
-	
-	void doIt(Object param1);
+    String getB();
+
+    void doIt(Object param1);
 }

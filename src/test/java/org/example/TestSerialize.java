@@ -29,25 +29,25 @@ import com.g414.jackson.proxy.ProxySerializerFactory;
  * Exercise the serializer...
  */
 public class TestSerialize extends TestCase {
-	public void testExample() throws Exception {
-		ExampleImpl impl = new ExampleImpl();
+    public void testExample() throws Exception {
+        ExampleImpl impl = new ExampleImpl();
 
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.setSerializerFactory(new ProxySerializerFactory());
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializerFactory(new ProxySerializerFactory());
 
-		// Look, I'm an ExampleImpl...
-		StringWriter w1 = new StringWriter();
-		mapper.writeValue(w1, impl);
-		System.out.println(w1.toString());
+        // Look, I'm an ExampleImpl...
+        StringWriter w1 = new StringWriter();
+        mapper.writeValue(w1, impl);
+        System.out.println(w1.toString());
 
-		// Look, I'm an Example1...
-		StringWriter w2 = new StringWriter();
-		mapper.writeValue(w2, impl.asExample1());
-		System.out.println(w2.toString());
+        // Look, I'm an Example1...
+        StringWriter w2 = new StringWriter();
+        mapper.writeValue(w2, impl.asExample1());
+        System.out.println(w2.toString());
 
-		// Look, I'm an Example2...
-		StringWriter w3 = new StringWriter();
-		mapper.writeValue(w3, impl.asExample2());
-		System.out.println(w3.toString());
-	}
+        // Look, I'm an Example2...
+        StringWriter w3 = new StringWriter();
+        mapper.writeValue(w3, impl.asExample2());
+        System.out.println(w3.toString());
+    }
 }

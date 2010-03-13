@@ -34,38 +34,38 @@ import org.codehaus.jackson.map.ser.BeanSerializerFactory;
  * instances in use which aren't MaskProxy instances, this will break.
  */
 public class ProxySerializerFactory extends BeanSerializerFactory {
-	public ProxySerializerFactory() {
-		super();
-	}
+    public ProxySerializerFactory() {
+        super();
+    }
 
-	@Override
-	public <T> JsonSerializer<T> createSerializer(Class<T> type,
-			SerializationConfig config) {
-		if (Proxy.isProxyClass(type)) {
-			return (JsonSerializer<T>) this.createSerializerImpl(type, config);
-		}
+    @Override
+    public <T> JsonSerializer<T> createSerializer(Class<T> type,
+            SerializationConfig config) {
+        if (Proxy.isProxyClass(type)) {
+            return (JsonSerializer<T>) this.createSerializerImpl(type, config);
+        }
 
-		return super.createSerializer(type, config);
-	}
+        return super.createSerializer(type, config);
+    }
 
-	private <T> JsonSerializer<T> createSerializerImpl(final Class<T> type,
-			final SerializationConfig config) {
-		return new JsonSerializer<T>() {
-			@Override
-			public void serialize(Object target, JsonGenerator jsonGen,
-					SerializerProvider provider) throws IOException,
-					JsonProcessingException {
-				InvocationHandler h = Proxy.getInvocationHandler(target);
+    private <T> JsonSerializer<T> createSerializerImpl(final Class<T> type,
+            final SerializationConfig config) {
+        return new JsonSerializer<T>() {
+            @Override
+            public void serialize(Object target, JsonGenerator jsonGen,
+                    SerializerProvider provider) throws IOException,
+                    JsonProcessingException {
+                InvocationHandler h = Proxy.getInvocationHandler(target);
 
-				// Note: expect this to break if it's not a MaskProxy!
-				// TODO: make safer
-				MaskProxy<T> p = (MaskProxy<T>) h;
+                // Note: expect this to break if it's not a MaskProxy!
+                // TODO: make safer
+                MaskProxy<T> p = (MaskProxy<T>) h;
 
-				JsonSerializer<T> ser = ProxySerializerFactory.super
-						.createSerializer(p.getInterface(), config);
-				ser.serialize((T) target, jsonGen, provider);
-			}
-		};
-	}
+                JsonSerializer<T> ser = ProxySerializerFactory.super
+                        .createSerializer(p.getInterface(), config);
+                ser.serialize((T) target, jsonGen, provider);
+            }
+        };
+    }
 
 }

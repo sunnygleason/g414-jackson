@@ -41,74 +41,74 @@ import com.g414.jackson.proxy.MapBackedBeanProxyFactory;
  * factory to allow deserialization using interfaces.
  */
 public class ProxyDeserializerFactory extends BeanDeserializerFactory {
-	public ProxyDeserializerFactory() {
-		super();
-	}
+    public ProxyDeserializerFactory() {
+        super();
+    }
 
-	@Override
-	public JsonDeserializer<Object> createBeanDeserializer(
-			DeserializationConfig config, JavaType type, DeserializerProvider p)
-			throws JsonMappingException {
-		if (type.isInterface()) {
-			return new BeanDeserializerProxyImpl(type);
-		}
+    @Override
+    public JsonDeserializer<Object> createBeanDeserializer(
+            DeserializationConfig config, JavaType type, DeserializerProvider p)
+            throws JsonMappingException {
+        if (type.isInterface()) {
+            return new BeanDeserializerProxyImpl(type);
+        }
 
-		return super.createBeanDeserializer(config, type, p);
-	}
+        return super.createBeanDeserializer(config, type, p);
+    }
 
-	protected static String normalizeName(String methodName) {
-		char[] name = methodName.substring(3).toCharArray();
-		name[0] = Character.toLowerCase(name[0]);
-		final String propName = new String(name);
-		return propName;
-	}
+    protected static String normalizeName(String methodName) {
+        char[] name = methodName.substring(3).toCharArray();
+        name[0] = Character.toLowerCase(name[0]);
+        final String propName = new String(name);
+        return propName;
+    }
 
-	protected static class BeanDeserializerProxyImpl extends BeanDeserializer {
-		public BeanDeserializerProxyImpl(JavaType type) {
-			super(type);
+    protected static class BeanDeserializerProxyImpl extends BeanDeserializer {
+        public BeanDeserializerProxyImpl(JavaType type) {
+            super(type);
 
-			for (Method method : type.getRawClass().getMethods()) {
-				String methodName = method.getName();
-				if (methodName.length() > 3 && methodName.startsWith("get")) {
-					String propName = normalizeName(methodName);
-					JavaType propertyType = TypeFactory.fromClass(method
-							.getReturnType());
-					SettableBeanProperty property = new SettableBeanProperty.SetterlessProperty(
-							propName, propertyType, null);
-					this.addProperty(property);
-				}
-			}
-		}
+            for (Method method : type.getRawClass().getMethods()) {
+                String methodName = method.getName();
+                if (methodName.length() > 3 && methodName.startsWith("get")) {
+                    String propName = normalizeName(methodName);
+                    JavaType propertyType = TypeFactory.fromClass(method
+                            .getReturnType());
+                    SettableBeanProperty property = new SettableBeanProperty.SetterlessProperty(
+                            propName, propertyType, null);
+                    this.addProperty(property);
+                }
+            }
+        }
 
-		@Override
-		public Object deserializeFromObject(JsonParser jp,
-				DeserializationContext ctxt) throws IOException,
-				JsonProcessingException {
-			Object bean;
-			MapBackedBeanProxy beanImpl;
-			try {
-				bean = MapBackedBeanProxyFactory.newProxyInstance(_beanType
-						.getRawClass());
-				beanImpl = (MapBackedBeanProxy) Proxy
-						.getInvocationHandler(bean);
-			} catch (Exception e) {
-				ClassUtil.unwrapAndThrowAsIAE(e);
-				return null; // never gets here
-			}
+        @Override
+        public Object deserializeFromObject(JsonParser jp,
+                DeserializationContext ctxt) throws IOException,
+                JsonProcessingException {
+            Object bean;
+            MapBackedBeanProxy beanImpl;
+            try {
+                bean = MapBackedBeanProxyFactory.newProxyInstance(_beanType
+                        .getRawClass());
+                beanImpl = (MapBackedBeanProxy) Proxy
+                        .getInvocationHandler(bean);
+            } catch (Exception e) {
+                ClassUtil.unwrapAndThrowAsIAE(e);
+                return null; // never gets here
+            }
 
-			while (jp.nextToken() != JsonToken.END_OBJECT) {
-				// otherwise field name
-				String propName = jp.getCurrentName();
-				SettableBeanProperty prop = this._props.get(propName);
+            while (jp.nextToken() != JsonToken.END_OBJECT) {
+                // otherwise field name
+                String propName = jp.getCurrentName();
+                SettableBeanProperty prop = this._props.get(propName);
 
-				if (prop != null) {
-					Object value = prop.deserialize(jp, ctxt);
-					beanImpl.set(propName, value);
-					continue;
-				}
-			}
+                if (prop != null) {
+                    Object value = prop.deserialize(jp, ctxt);
+                    beanImpl.set(propName, value);
+                    continue;
+                }
+            }
 
-			return bean;
-		}
-	}
+            return bean;
+        }
+    }
 }

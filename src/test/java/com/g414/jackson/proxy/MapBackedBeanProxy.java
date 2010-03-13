@@ -28,86 +28,86 @@ import java.util.Map;
  * as a specified interface.
  */
 public class MapBackedBeanProxy<T> implements InvocationHandler {
-	private final Class<T> iface;
-	private final Map<String, Object> delegate;
-	private final InvocationHandler finalHandler;
+    private final Class<T> iface;
+    private final Map<String, Object> delegate;
+    private final InvocationHandler finalHandler;
 
-	public static final InvocationHandler UNSUPPORTED_OPERATION_HANDLER = new InvocationHandler() {
-		public Object invoke(Object proxy, Method method, Object[] args)
-				throws Throwable {
-			throw new UnsupportedOperationException();
-		}
-	};
+    public static final InvocationHandler UNSUPPORTED_OPERATION_HANDLER = new InvocationHandler() {
+        public Object invoke(Object proxy, Method method, Object[] args)
+                throws Throwable {
+            throw new UnsupportedOperationException();
+        }
+    };
 
-	public Class<T> getInterface() {
-		return iface;
-	}
+    public Class<T> getInterface() {
+        return iface;
+    }
 
-	public MapBackedBeanProxy(Class<T> iface) {
-		this.iface = iface;
-		this.delegate = new LinkedHashMap<String, Object>();
-		this.finalHandler = UNSUPPORTED_OPERATION_HANDLER;
-	}
+    public MapBackedBeanProxy(Class<T> iface) {
+        this.iface = iface;
+        this.delegate = new LinkedHashMap<String, Object>();
+        this.finalHandler = UNSUPPORTED_OPERATION_HANDLER;
+    }
 
-	public Object invoke(Object proxy, Method method, Object[] args)
-			throws Throwable {
-		String methodName = method.getName();
+    public Object invoke(Object proxy, Method method, Object[] args)
+            throws Throwable {
+        String methodName = method.getName();
 
-		if (methodName.equals("toString") && args == null) {
-			return iface.getName() + "$" + delegate.toString();
-		}
+        if (methodName.equals("toString") && args == null) {
+            return iface.getName() + "$" + delegate.toString();
+        }
 
-		if (methodName.equals("equals") && args.length == 1) {
-			if (!Proxy.isProxyClass(args[1].getClass())) {
-				return false;
-			}
+        if (methodName.equals("equals") && args.length == 1) {
+            if (!Proxy.isProxyClass(args[1].getClass())) {
+                return false;
+            }
 
-			InvocationHandler invocationHandler = Proxy
-					.getInvocationHandler(args[1]);
+            InvocationHandler invocationHandler = Proxy
+                    .getInvocationHandler(args[1]);
 
-			if (!(invocationHandler instanceof MapBackedBeanProxy)) {
-				return false;
-			}
+            if (!(invocationHandler instanceof MapBackedBeanProxy)) {
+                return false;
+            }
 
-			return delegate
-					.equals(((MapBackedBeanProxy) invocationHandler).delegate);
-		}
+            return delegate
+                    .equals(((MapBackedBeanProxy) invocationHandler).delegate);
+        }
 
-		if (methodName.equals("hashCode") && args == null) {
-			return delegate.hashCode();
-		}
+        if (methodName.equals("hashCode") && args == null) {
+            return delegate.hashCode();
+        }
 
-		if (iface.getMethod(methodName, method.getParameterTypes()) == null
-				|| methodName.length() < 4) {
-			return finalHandler.invoke(proxy, method, args);
-		}
+        if (iface.getMethod(methodName, method.getParameterTypes()) == null
+                || methodName.length() < 4) {
+            return finalHandler.invoke(proxy, method, args);
+        }
 
-		String property = getPropertyName(methodName);
+        String property = getPropertyName(methodName);
 
-		if (methodName.startsWith("get") && args.length == 0) {
-			return delegate.get(property);
-		}
+        if (methodName.startsWith("get") && args.length == 0) {
+            return delegate.get(property);
+        }
 
-		if (methodName.startsWith("set") && args.length == 1) {
-			delegate.put(property, args[0]);
-			return null;
-		}
+        if (methodName.startsWith("set") && args.length == 1) {
+            delegate.put(property, args[0]);
+            return null;
+        }
 
-		return finalHandler.invoke(proxy, method, args);
-	}
+        return finalHandler.invoke(proxy, method, args);
+    }
 
-	public void set(String property, Object value) {
-		this.delegate.put(property, value);
-	}
+    public void set(String property, Object value) {
+        this.delegate.put(property, value);
+    }
 
-	public Object get(String property) {
-		return this.delegate.get(property);
-	}
+    public Object get(String property) {
+        return this.delegate.get(property);
+    }
 
-	private String getPropertyName(String methodName) {
-		char[] methodChars = methodName.toCharArray();
-		methodChars[3] = Character.toLowerCase(methodChars[3]);
-		String property = new String(methodChars, 3, methodChars.length - 3);
-		return property;
-	}
+    private String getPropertyName(String methodName) {
+        char[] methodChars = methodName.toCharArray();
+        methodChars[3] = Character.toLowerCase(methodChars[3]);
+        String property = new String(methodChars, 3, methodChars.length - 3);
+        return property;
+    }
 }

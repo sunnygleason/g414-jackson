@@ -23,8 +23,8 @@ import java.lang.reflect.Proxy;
  * Factory class for generating new Proxy classes using the MaskProxy.
  */
 public class MaskProxyFactory {
-	public static <T> T newProxyInstance(Class<T> iface, Object delegate) {
-		return (T) Proxy.newProxyInstance(iface.getClassLoader(),
-				new Class[] { iface }, new MaskProxy<T>(iface, delegate));
-	}
+    public static <T> T newProxyInstance(Class<T> iface, Object delegate) {
+        return (T) Proxy.newProxyInstance(iface.getClassLoader(),
+                new Class[] { iface }, new MaskProxy<T>(iface, delegate));
+    }
 }
