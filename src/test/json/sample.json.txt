@@ -1,0 +1,7 @@
+{
+  "foo":"bar",
+  "b":["embedded", "array", {"ok":[1, 2, 3], "notok":false}, {"foo":{"bar":"baz"}}],
+  "a":["embedded", "array"],
+  "another":{"deeply":"nested","object":true},
+  "now":1
+}
