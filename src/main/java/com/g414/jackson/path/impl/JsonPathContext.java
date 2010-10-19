@@ -108,7 +108,32 @@ public class JsonPathContext implements Iterable<String> {
         };
     }
 
-    protected static class DLLNode {
+    public Iterator<DLLNode> nodeIterator() {
+        return new Iterator<DLLNode>() {
+            private DLLNode next = head;
+
+            @Override
+            public boolean hasNext() {
+                return next != null;
+            }
+
+            @Override
+            public DLLNode next() {
+                DLLNode temp = next;
+                next = next.next;
+
+                return temp;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException(
+                        "remove() not supported");
+            }
+        };
+    }
+
+    public static class DLLNode {
         public DLLNode prev;
         public DLLNode next;
         public JsonStreamContext context;
